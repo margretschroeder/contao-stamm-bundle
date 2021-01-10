@@ -1,0 +1,55 @@
+{
+    "name": "jette/contao-stamm-bundle",
+    "type": "contao-bundle",
+    "description": "Versuche von Jette einer Erweiterung für contao bundles",
+    "homepage": "https://contao.org",
+    "license": "LGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Margret Schroeder",
+            "homepage": "https://github.com/leofeyer"
+        },
+        {
+            "name": "Contao Community",
+            "homepage": "https://contao.org/contributors"
+        }
+    ],
+    "require": {
+        "php": "^7.2 || ^8.0",
+        "contao/core-bundle": "^4.9",
+        "symfony/config": "^4.4 || ^5.1",
+        "symfony/dependency-injection": "^4.4 || ^5.1",
+        "symfony/http-kernel": "^4.4 || ^5.1"
+    },
+    "conflict": {
+        "contao/manager-plugin": "<2.0 || >=3.0"
+    },
+    "require-dev": {
+        "contao/manager-plugin": "^2.0",
+        "contao/easy-coding-standard": "^2.0",
+        "phpunit/phpunit": "^8.4",
+        "symfony/phpunit-bridge": "^4.4 || ^5.1"
+    },
+    "extra": {
+        "contao-manager-plugin": "MargretSchroeder\\ContaoStammBundle\\ContaoManager\\Plugin"
+    },
+    "autoload": {
+        "psr-4": {
+            "MargretSchroeder\\ContaoStammBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MargretSchroeder\\ContaoStammBundle\\Tests\\": "tests/"
+        }
+    },
+    "support": {
+        "issues": "https://github.com/margetschroeder/contao-stamm-bundle/issues",
+        "source": "https://github.com/margretschroeder/contao-stamm-bundle"
+    },
+    "scripts": {
+        "cs-fixer": [
+            "vendor/bin/ecs check src/ tests/ --fix --ansi"
+        ]
+    }
+}
