@@ -17,9 +17,9 @@ use PHPUnit\Framework\TestCase;
 
 class ContaoStammBundleTest extends TestCase
 {
-    public function testCanBeInstantiated(): void
+    public function testCanBeInstantiated()
     {
-        $bundle = new ContaoSkeletonBundle();
+        $bundle = new ContaoStammBundle();
 
         $this->assertInstanceOf('MargretSchroeder\ContaoStammBundle\ContaoStammBundle', $bundle);
     }

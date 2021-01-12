@@ -1,6 +1,7 @@
 <?php
     
   namespace MargretSchroeder\ContaoStammBundle\Module;  
+  use MargretSchroeder\ContaoStammBundle\Library\MessageGenerator;
   
    class HelloWorldModule extends \Module
     {
@@ -36,7 +37,10 @@
      */
     protected function compile()
     {
-        $this->Template->message = 'Hello World';
+        $messageGenerator = \Contao\System::getContainer()->get(MessageGenerator::class);	
+		$message = $messageGenerator->sayHelloTo('World');
+		
+        $this->Template->message = $message;
     }
 } 
     
