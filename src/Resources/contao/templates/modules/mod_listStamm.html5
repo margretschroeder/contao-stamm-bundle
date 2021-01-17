@@ -1,0 +1,49 @@
+<?php $this->extend('block_searchable'); ?>
+
+<?php $this->block('content'); ?>
+
+
+ <table class="table">
+  <thead>
+			<tr>
+			<th class="head col">Bild</th>
+			<th class="head col">ID</th>
+			<th class="head col">Vorname</th>
+			<th class="head col">Nachname</th>
+			<th class="head col">Geburt</th>
+			<th class="head col">Geburtsjahr</th>
+			<th class="head col">Tod</th>
+			<th class="head col">Todessjahr</th>
+			<th class="head col">Partner-Id</th>
+			<th class="head col">Mutter-Id</th>
+			<th class="head col">Vater-Id</th>
+			<th class="head col">Mutter2-Id</th>
+			<th class="head col">Vater2-Id</th>
+			
+			</tr>
+ </thead>			
+			
+<?php foreach ($this->Template->Personen as $row=>$person ): 	?>
+   <br>
+       
+  <tr class="row_last">
+    <td class=body col_4>  <img src="<?php echo $person[bild] ?>" alt="Portrait" width="40" >   </td>
+    <td class=body col_4>  <?php echo $person[id] ?> </td>
+    <td class=body col_4> <?php echo $person[firstname] ?> </td>
+    <td class=body col_4> <?php echo $person[lastname] ?> </td>
+    <td class=body col_4> <?php echo $person[geburt] ?> </td>
+    <td class=body col_4> <?php echo $person[geburtsjahr] ?> </td>
+    <td class=body col_4> <?php echo $person[tod] ?> </td>
+    <td class=body col_4> <?php echo $person[todesjahr] ?> </td>
+    <td class=body col_4> <?php echo $person[partner] ?> </td>
+    <td class=body col_4> <?php echo $person[mutter] ?> </td>
+    <td class=body col_4> <?php echo $person[vater] ?> </td>
+    <td class=body col_4> <?php echo $person[mutter2] ?> </td>
+    <td class=body col_4> <?php echo $person[vater2] ?> </td>
+    
+  </tr>
+
+<?php endforeach; ?>
+</table>
+
+<?php $this->endblock(); ?>
