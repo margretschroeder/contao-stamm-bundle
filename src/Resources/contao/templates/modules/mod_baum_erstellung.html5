@@ -1,0 +1,49 @@
+<?php $this->extend('block_searchable'); ?>
+
+<?php $this->block('content'); ?>
+
+
+
+<svg id="svg2" xmlns="http://www.w3.org/2000/svg" viewBox="-1500 0 3000 2500">	
+
+
+
+<?php  foreach($this->pp as $key => $val ): ?>
+
+ <?= $val[elternpath] ?>
+
+<?php endforeach ?> 
+
+
+
+<?php  foreach($this->pp as $key => $val ): ?>
+   
+
+    <g id="stamm-<?= $val[id]  ?>"
+	    class="<?= $val[vorname] ?>gruppe "
+       transform="translate(<?= $val[x]  ?>, <?= $val[y]  ?> )">
+      
+		<rect
+		   id="<?= $val[id]?>-rect"
+		   class="stammimagehintergrund <?= $val[css] ?>-hintergrund";
+		   width="120";
+		   height="160";
+           x="0";
+           y="0";
+        />
+		
+		<image id="<?= $val[id]  ?>-bild" class="stammimage" 
+		       x="10" y="10"  height="140" width="100" 
+		       href="<?= $val[bild]?>" />      
+           
+    </g> 
+   
+  
+   
+   <?php endforeach ?> 
+  </svg>
+
+
+<p>  <a href="http://vesuch1.localhost"  >  knopf  </a>  </p>
+<?php var_dump($mutter) ?>
+<?php $this->endblock(); ?>

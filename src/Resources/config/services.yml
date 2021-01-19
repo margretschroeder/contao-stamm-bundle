@@ -1,6 +1,9 @@
 services:
-    MargretSchroeder\ContaoStammBundle\Library\MessageGenerator:
+     MargretSchroeder\ContaoStammBundle\Library\MessageGenerator:
         public: true
 
-    MargretSchroeder\ContaoStammBundle\Controller\FrontendModule\BaumErstellungController:
-            
+     MargretSchroeder\ContaoStammBundle\Library\StammbaumPerson: ~
+       
+
+     MargretSchroeder\ContaoStammBundle\Controller\FrontendModule\BaumErstellungController: ~
+ 
