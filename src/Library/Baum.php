@@ -44,19 +44,14 @@ class Baum
         $ich=$this->addperson($this->personen, $baum, $row, 'ich', '' );   
         $vater = $this->addperson($this->personen, $baum, $row, 'vater',  self::LINKS );
         $mutter = $this->addperson($this->personen, $baum, $row, 'mutter', self::RECHTS );
+        $geschwister = $this->finde_add_geschwister( $this->personen, $baum, $row  );
+        $partner = $this->finde_add_partner($this->personen, $baum, $this->cid, 2*self::LINKS );
+        $kinder  = $this->finde_add_kinder($this->personen, $baum, $this->cid, self::RECHTS );
         
-         /*
-        
-        for($i = 0; $i < count($baum); $i = $i+1  ){
-        echo "<p>" ."i=" . $i    .  "<br>";
-            var_dump($baum[$i] ); 
-        echo "</p>";
-        }
-        
+       /*
        
-        $geschwister = $this->finde_add_geschwister( $this->personen, $baum, $this->cid  );
-        $partner = $this->finde_add_partner($this->personen, $baum, $this->cid, 2*LINKS );
-        $kinder  = $this->finde_add_kinder($this->personen, $baum, $this->cid, RECHTS );
+        
+        
         $this->kernbaum = $this->make_kern_familie($baum, $this->cid, $this->kernrollen);
         
         $gvater1 = $this->addperson($this->personen, $baum, $ich[vater], 'vater',  LINKS );
@@ -68,11 +63,55 @@ class Baum
         
         
         $this->make_eltern_path($baum);
+        $this->make_partner_path($baum);
+        
+         
+        for($i = 0; $i < count($baum); $i = $i+1  ){
+        echo "<p>" ."i=" . $i    .  "<br>";
+            var_dump($baum[$i] ); 
+        echo "</p>";
+        }
         
         
         return $baum;
         
     }
+    
+    function make_partner_path(&$baum) {
+        foreach ( $baum as $index => $person  ){
+            if ($person[partner] != '' ){
+                
+                   $partner1 = $baum[$index];
+                   $partner2 = $baum[ $this->find_baum_row_by_id($baum, $partner1[partner])];
+                
+                   $punkt1 = array(x=> $partner1[x],y=> $partner1[y]);
+                   $punkt2 = array(x=>$partner2[x], y=>$partner2[y]);
+                   
+                   
+                   if ( $punkt1[y] >= $punkt2[y]  ) 
+                   {
+                       $startp= array(x=>($punkt1[x] + self::REx/2 ) , y=>($punkt1[y] + self::REy));
+                       $zielp = array(x=>($punkt2[x] + self::REx/2 ) , y=>($punkt2[y] + self::REy));
+                   } else {
+                       
+                       $zielp= array(x=>($punkt1[x] + self::REx/2 ) , y=>($punkt1[y] + self::REy));
+                       $startp = array(x=>($punkt2[x] + self::REx/2 ) , y=>($punkt2[y] + self::REy));
+                            
+                   }
+                   $partnerpath = '<path class="elternpath"   
+                                    d="M ' .  $startp[x]. ','. $startp[y] . 'v'. self::PVERSATZ/2 .
+                                    'H'. $zielp[x] . 'V' . $zielp[y] . '  "        
+                                   stroke = "green" stroke-width="7" fill="none"/> ';
+                   
+                   $baum[$index][partnerpath]= $partnerpath;
+                
+            }
+        
+        }
+        
+        
+    }
+    
     
     function make_eltern_path(&$baum) {
            $i=0;
@@ -107,9 +146,9 @@ class Baum
                 $baum[$i][elternpath]= $elternpath;
             }
             
-             
+         $i = $i+1;     
         }
-        $i = $i+1;
+       
         return; 
         
     }
@@ -295,13 +334,15 @@ class Baum
                 $pid = $tmp;
                 break;
             default:
-                $name = $id;
+                $pid = $id;
+                $name =$this->find_row_by_id( $id);
                 $x= ($x0 + $abst );
+                $y= $this->find_y_from_row($name);
         }
         
         
         
-            //echo "Name:" . $id ;
+            //echo "Name:" . $name ;
             
             $person = $personen[$name];
             $person['rolle'] =$rolle;
@@ -312,6 +353,9 @@ class Baum
             $objFile = \FilesModel::findByUuid($personen[$name][singleSRC]);
             $person['bild'] =  $objFile->path;
             
+            //echo "<p>";
+            //var_dump($personen[$name] );
+            //echo "</p>";
             
             
             //$baum[$name]=$person;
@@ -327,20 +371,24 @@ class Baum
         
         $kinder=array();
         
+        $id_db = $id;
+        $id_row = $this->find_row_by_id($id);
+        
         foreach($personen as $name => $attr ){
-            if ($attr[vater] == $id or $attr[mutter] ==$id){
+            if ($v=$attr[vater] == $id or $m=$attr[mutter] == $id){
                 
-                if ($attr[vater] == $id ){
-                    $elter2 = $attr[mutter];
-                } else {
-                    $elter2 = $attr[vater];
-                }
+                echo "Kind gefunden: $attr[firstname] ";
                 
-                $kinder[$name]= $personen[$name];
-                $kinder[$name][elter2] = $elter2;
+                array_push($kinder, $personen[$this->find_row_by_id($attr[id]) ]  );
+                
             }
         }
+      
         
+        
+        
+        
+        /*
         if ( $x != 'NOADD')  {
             
             foreach( $kinder as $name => $val ) {
@@ -354,7 +402,7 @@ class Baum
             $this->place_kinder($kinder, $baum, $id);
         }
         
-        
+        */
         return $kinder;
     }
     
@@ -364,20 +412,33 @@ class Baum
         
         $geschwister=array();
         
-        foreach($personen as $name => $attr ){
-            if ($attr[vater] == $personen[$id][vater] and  $attr[mutter] == $personen[$id][mutter] and $attr[id] != $id   )
-                $geschwister[$attr[id]]= $personen[$attr[id]];
+        //$echo "ID:  $id  ";
+        
+        foreach($personen as $person ){
+            if ($person[vater] == $personen[$id][vater] and  $person[mutter] == $personen[$id][mutter] and $person[id] != $personen[$id][id]   )
+                //$geschwister[$attr[id]]= $personen[$attr[id]];
+                array_push($geschwister, $person);
+        }
+        foreach( $geschwister as $person) {
+            /*
+            echo "<br>";
+            
+            foreach( $person as $name => $val ){
+                echo "Name: $name Val: $val  <br>";
+            }
+            */
+            $geschw=  $this->addperson($personen, $baum, $person[id], 'geschwist', 1* self::RECHTS);
         }
         
         
-        
+        /*
         $index=1;
         foreach( $geschwister as $name => $val ) {
             $kk =  $this->finde_add_kinder($this->personen, $baum, $name, NOADD ) ;
             
             if( count($kk) == 0 ){
                 $geschw=  $this->addperson($this->personen, $baum, $name, 'geschwist', $index * RECHTS );
-                $this->adjust_x($baum, $geschw , RECHTS);
+                $this->adjust_x($baum, $geschw , RECHTS);arr
                 $index++;
             }
         }
@@ -391,22 +452,30 @@ class Baum
             }
         }
         
-        
+        */
         return $geschwister;
     }
     
     function finde_add_partner($personen, &$baum , $id, $x ) {
-        if ( $personen[$id][partner] != "" and  $personen[$personen[$id][partner]] != ''){
+        
+        //echo "ID: $id  CID $this->cid";
+        $id_db = $id;
+        $id_row = $this->find_row_by_id($id);
+        
+        if ( $personen[$id_row][partner] != "" and  $personen[$personen[$id_row][partner]] != ''){
             $partner1= $personen[$personen[$id][partner]];
         } else {
             foreach( $personen as $name => $wert ){
                 if ( $wert[partner] == $id ){
-                    $partner1 = $name;
-                }
+                   $partner1 = $wert[id];
+               
+                  // echo "Name: $name  Val: $wert[id]  Partner: $partner1";
+                  }   
             }
         }
         if ( $partner1 != '')
             $partner =  $this->addperson($this->personen, $baum, $partner1, 'partner', $x );
+        
             return $partner;
     }
 }

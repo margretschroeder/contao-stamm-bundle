@@ -28,9 +28,9 @@ use Contao\StringUtil;
 use Contao\System;
 use Contao\Versions;
 
+use MargretSchroeder\ContaoStammBundle\Model\PersonModel;
 
 
- 
 $GLOBALS['TL_DCA']['tl_person'] = array
 (
 // Config
@@ -106,6 +106,14 @@ $GLOBALS['TL_DCA']['tl_person'] = array
                 'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"'
             ),
             
+            'toggle' => array
+            (
+                'icon'                => 'visible.svg',
+                'attributes'          => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
+                'button_callback'     => array('tl_person', 'toggleIcon'),
+                'showInHeader'        => true
+            ),
+            
             'show'   => array
             (
                 'label'      => &$GLOBALS['TL_LANG']['tl_person']['show'],
@@ -158,7 +166,30 @@ $GLOBALS['TL_DCA']['tl_person'] = array
             'sql'                     => "int(10) unsigned NOT NULL default '0'"
         ),
         
+        'published' => array
+        (
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => array('doNotCopy'=>true),
+            'sql'                     => "char(1) NOT NULL default ''"
+        ),
         
+        'start' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+            'sql'                     => "varchar(10) NOT NULL default ''"
+        ),
+        
+        'stop' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+            'sql'                     => "varchar(10) NOT NULL default ''"
+        ),
         
         'lastname' => array
         (
@@ -324,7 +355,7 @@ $GLOBALS['TL_DCA']['tl_person'] = array
     
     'palettes' => array(
         
-        'default'                     => '{title_legend},lastname, firstname; geburtsname, singleSRC ; {daten_legend},geburt, geburtsjahr; tod, todesjahr;{beziehung_legend},mutter, vater;partner ;{besbeziehung_legend:hide},mutter2, vater2  ',
+        'default'                     => '{title_legend},lastname, firstname; geburtsname, singleSRC ; {daten_legend},geburt, geburtsjahr; tod, todesjahr;{beziehung_legend},mutter, vater;partner ;{besbeziehung_legend:hide},mutter2, vater2 ; {publish_legend},published,start,stop',
     )
         
   
@@ -369,6 +400,154 @@ class tl_person extends Backend
         ->execute($time, $dc->id);
     }
     
+    public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
+    {
+        if (Input::get('tid'))
+        {
+            $this->toggleVisibility(Input::get('tid'), (Input::get('state') == 1), (@func_get_arg(12) ?: null));
+            $this->redirect($this->getReferer());
+        }
+        
+        // Check permissions AFTER checking the tid, so hacking attempts are logged
+        if (!$this->User->hasAccess('tl_person::published', 'alexf'))
+        {
+            return '';
+        }
+        
+        $href .= '&amp;tid=' . $row['id'] . '&amp;state=' . ($row['published'] ? '' : 1);
+        
+        if (!$row['published'])
+        {
+            $icon = 'invisible.svg';
+        }
+        
+        if (!$this->User->hasAccess($row['type'], 'alpty') || ($objPerson= PersonModel::findById($row['id'])) === null || !$this->User->isAllowed(BackendUser::CAN_EDIT_PAGE, $objPerson->row()))
+        {
+            return Image::getHtml($icon) . ' ';
+        }
+        
+        return '<a href="' . $this->addToUrl($href) . '" title="' . StringUtil::specialchars($title) . '"' . $attributes . '>' . Image::getHtml($icon, $label, 'data-state="' . ($row['published'] ? 1 : 0) . '"') . '</a> ';
+    }
+    
+   
+    
+    /**
+     * Disable/enable a user group
+     *
+     * @param integer       $intId
+     * @param boolean       $blnVisible
+     * @param DataContainer $dc
+     *
+     * @throws AccessDeniedException
+     */
+    public function toggleVisibility($intId, $blnVisible, DataContainer $dc=null)
+    {
+        // Set the ID and action
+        Input::setGet('id', $intId);
+        Input::setGet('act', 'toggle');
+        
+        if ($dc)
+        {
+            $dc->id = $intId; // see #8043
+        }
+        
+        // Trigger the onload_callback
+        if (is_array($GLOBALS['TL_DCA']['tl_person']['config']['onload_callback']))
+        {
+            foreach ($GLOBALS['TL_DCA']['tl_person']['config']['onload_callback'] as $callback)
+            {
+                if (is_array($callback))
+                {
+                    $this->import($callback[0]);
+                    $this->{$callback[0]}->{$callback[1]}($dc);
+                }
+                elseif (is_callable($callback))
+                {
+                    $callback($dc);
+                }
+            }
+        }
+        
+        // Check the field access
+        if (!$this->User->hasAccess('tl_person::published', 'alexf'))
+        {
+            throw new AccessDeniedException('Not enough permissions to publish/unpublish person ID ' . $intId . '.');
+        }
+        
+        $objRow = $this->Database->prepare("SELECT * FROM tl_person WHERE id=?")
+        ->limit(1)
+        ->execute($intId);
+        
+        if ($objRow->numRows < 1)
+        {
+            throw new AccessDeniedException('Invalid person ID ' . $intId . '.');
+        }
+        
+        // Set the current record
+        if ($dc)
+        {
+            $dc->activeRecord = $objRow;
+        }
+        
+        $objVersions = new Versions('tl_person', $intId);
+        $objVersions->initialize();
+        
+        // Trigger the save_callback
+        if (is_array($GLOBALS['TL_DCA']['tl_person']['fields']['published']['save_callback']))
+        {
+            foreach ($GLOBALS['TL_DCA']['tl_person']['fields']['published']['save_callback'] as $callback)
+            {
+                if (is_array($callback))
+                {
+                    $this->import($callback[0]);
+                    $blnVisible = $this->{$callback[0]}->{$callback[1]}($blnVisible, $dc);
+                }
+                elseif (is_callable($callback))
+                {
+                    $blnVisible = $callback($blnVisible, $dc);
+                }
+            }
+        }
+        
+        $time = time();
+        
+        // Update the database
+        $this->Database->prepare("UPDATE tl_person SET tstamp=$time, published='" . ($blnVisible ? '1' : '') . "' WHERE id=?")
+        ->execute($intId);
+        
+        if ($dc)
+        {
+            $dc->activeRecord->tstamp = $time;
+            $dc->activeRecord->published = ($blnVisible ? '1' : '');
+        }
+        
+        // Trigger the onsubmit_callback
+        if (is_array($GLOBALS['TL_DCA']['tl_person']['config']['onsubmit_callback']))
+        {
+            foreach ($GLOBALS['TL_DCA']['tl_person']['config']['onsubmit_callback'] as $callback)
+            {
+                if (is_array($callback))
+                {
+                    $this->import($callback[0]);
+                    $this->{$callback[0]}->{$callback[1]}($dc);
+                }
+                elseif (is_callable($callback))
+                {
+                    $callback($dc);
+                }
+            }
+        }
+        
+        $objVersions->create();
+        
+        // The onsubmit_callback has triggered scheduleUpdate(), so run generateSitemap() now
+        $this->generateSitemap();
+        
+        if ($dc)
+        {
+            $dc->invalidateCacheTags();
+        }
+    }
     
 }
 

@@ -38,8 +38,8 @@
     protected function compile()
     {
         
-        $alle = \MargretSchroeder\ContaoStammBundle\Model\PersonModel::findall();
-        
+        //$alle = \MargretSchroeder\ContaoStammBundle\Model\PersonModel::findall();
+        $alle = \MargretSchroeder\ContaoStammBundle\Model\PersonModel::findPublishedAll();
         $zeilen = $alle->count();
          
         $personen = $alle->fetchAll();

@@ -11,6 +11,7 @@
 <?php  foreach($this->pp as $key => $val ): ?>
 
  <?= $val[elternpath] ?>
+ <?= $val[partnerpath] ?>
 
 <?php endforeach ?> 
 
