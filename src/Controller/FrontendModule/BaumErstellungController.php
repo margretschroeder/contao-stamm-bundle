@@ -33,27 +33,26 @@ class BaumErstellungController extends AbstractFrontendModuleController
         }
         
         
-        $alle = \MargretSchroeder\ContaoStammBundle\Model\PersonModel::findall();
-        $personen = $alle->fetchAll();
+        //$alle = \MargretSchroeder\ContaoStammBundle\Model\PersonModel::findall();
+        //$personen = $alle->fetchAll();
        
         
-        $baumobject = new StammbaumPerson($personen, 6,6);
+        //$baumobject = new StammbaumPerson($personen, 6,6);
         
         //var_dump($baumobject->baum);
         
-        $pp = $baumobject->baum;
         
-        $template->pp = $pp;
         
         //echo "$pp->vorname   $pp->y   <br>";
         //echo StammbaumPerson::REx;
+        $baumobject = new Baum(5);
+        $pp = $baumobject->baum;
         
+        //var_dump($pp);
         
-         $template->hugo = "dies ist nur ein Versuch";
+        $template->pp = $pp;
         
-        $template->action = $request->getUri();
-        
-        //var_dump($template);
+         
         
         return $template->getResponse();
     }

@@ -68,7 +68,7 @@ class StammbaumPerson extends Baum
                 $this-> zeile2 = $this->zeile2();
                 $this->headline = $this->headline();
                 $this-> x = $p[x];
-                $this-> y = $this->find_y();
+                //$this-> y = $this->find_y();
                 $this->kern_x = 0 ;
                 $this->kern_y = 0 ;
                // $this->kern_radius = $this->kreis($this->kernbaum);              
@@ -197,7 +197,7 @@ class StammbaumPerson extends Baum
         
     }
     
-    
+    /*
     function find_y(){
         
         $ende =  2050;
@@ -220,6 +220,7 @@ class StammbaumPerson extends Baum
         return $yyy;
         
     }
+    */
     /*
     function kreis ($teilfamilie) {
         

@@ -314,47 +314,47 @@ class Baum
         
         switch ($rolle)  {
             case 'ich':
-                $name = $id; 
+                $row = $id; 
                 $x = $x0;
                 $y= $this->find_y_from_row($id);
                 $pid= $id; 
                 break;
             case 'vater':
                 $tmp=$personen[$id][vater];
-                $name = $this->find_row_by_id($tmp); 
+                $row = $this->find_row_by_id($tmp); 
                 $x= ($x0 + $abst);
-                $y= $this->find_y_from_row($name);
+                $y= $this->find_y_from_row($row);
                 $pid = $tmp;
                 break;
             case 'mutter':
                 $tmp=$personen[$id][mutter];
-                $name = $this->find_row_by_id($tmp); 
+                $row = $this->find_row_by_id($tmp); 
                 $x= ($x0 + $abst );
-                $y= $this->find_y_from_row($name);
+                $y= $this->find_y_from_row($row);
                 $pid = $tmp;
                 break;
             default:
                 $pid = $id;
-                $name =$this->find_row_by_id( $id);
+                $row =$this->find_row_by_id( $id);
                 $x= ($x0 + $abst );
-                $y= $this->find_y_from_row($name);
+                $y= $this->find_y_from_row($row);
         }
         
         
         
             //echo "Name:" . $name ;
             
-            $person = $personen[$name];
+            $person = $personen[$row];
             $person['rolle'] =$rolle;
             $person['x']= $x;
             $person['y']= $y;
             $person['pid'] = $pid;
             
-            $objFile = \FilesModel::findByUuid($personen[$name][singleSRC]);
+            $objFile = \FilesModel::findByUuid($personen[$row][singleSRC]);
             $person['bild'] =  $objFile->path;
             
             //echo "<p>";
-            //var_dump($personen[$name] );
+            //var_dump($personen[$row] );
             //echo "</p>";
             
             
@@ -371,9 +371,7 @@ class Baum
         
         $kinder=array();
         
-        $id_db = $id;
-        $id_row = $this->find_row_by_id($id);
-        
+  
         foreach($personen as $name => $attr ){
             if ($v=$attr[vater] == $id or $m=$attr[mutter] == $id){
                 
@@ -383,8 +381,36 @@ class Baum
                 
             }
         }
-      
+     
+        //echo "<p>";
+        //var_dump($kinder );
+        //echo "</p>";
         
+        
+        $kzahl = count($kinder);
+        
+        foreach($kinder as $row => $attr ){
+            
+       
+            $elter1 = $personen[$this->find_row_by_id($id)];
+            
+            if ($attr[mutter] =='' or $attr[vater]=='' ){
+                $elter2='';
+            } else {
+                if ( $attr[mutter] == $id  ){
+                    $elter2 = $personen[$this->find_row_by_id($attr[vater]) ];
+                } else {
+                    $elter2 = $personen[$this->find_row_by_id($attr[mutter]) ];
+                }
+              
+               // elter2 muss eventuell noch im Baum untergebracht werden
+               
+                
+                
+            }
+            
+            
+        }
         
         
         

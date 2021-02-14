@@ -15,8 +15,8 @@
 			<th class="head col">Tod</th>
 			<th class="head col">Todessjahr</th>
 			<th class="head col">Partner-Id</th>
-			<th class="head col">Mutter-Id</th>
-			<th class="head col">Vater-Id</th>
+			<th class="head col">Eltern-teil1-Id</th>
+			<th class="head col">Eltern-teil2-Id</th>
 			<th class="head col">Mutter2-Id</th>
 			<th class="head col">Vater2-Id</th>
 			
@@ -36,8 +36,8 @@
     <td class=body col_4> <?php echo $person[tod] ?> </td>
     <td class=body col_4> <?php echo $person[todesjahr] ?> </td>
     <td class=body col_4> <?php echo $person[partner] ?> </td>
-    <td class=body col_4> <?php echo $person[mutter] ?> </td>
-    <td class=body col_4> <?php echo $person[vater] ?> </td>
+    <td class=body col_4> <?php echo $person[elter1] ?> </td>
+    <td class=body col_4> <?php echo $person[elter2] ?> </td>
     <td class=body col_4> <?php echo $person[mutter2] ?> </td>
     <td class=body col_4> <?php echo $person[vater2] ?> </td>
     

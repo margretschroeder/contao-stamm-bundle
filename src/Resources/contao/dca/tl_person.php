@@ -38,12 +38,12 @@ $GLOBALS['TL_DCA']['tl_person'] = array
     (
         'dataContainer'               => 'Table',
         'enableVersioning'            => true,
-        /*
+        
         'onsubmit_callback' => array
         (
-            array('tl_person', 'storeDateAdded')
+            array('tl_person', 'clear_partner')
         ),
-        */
+        
         'sql' => array
         (
             'keys' => array
@@ -223,6 +223,7 @@ $GLOBALS['TL_DCA']['tl_person'] = array
             'sorting'                 => true,
             'flag'                    => 1,
             'inputType'               => 'text',
+            //'save_callback'           => array(array('tl_person', 'clear_partner' )),
             'eval'                    => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50'),
             'sql'                     => "varchar(255) NOT NULL default ''"
         ),
@@ -230,11 +231,14 @@ $GLOBALS['TL_DCA']['tl_person'] = array
          
          'geburt' => array
         (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_person']['geburt'],
             'exclude'                 => true,
-			'inputType'               => 'text',
-		//	'eval'                    => array('rgxp'=>'date', 'datepicker'=>true, 'feEditable'=>true, 'feViewable'=>true, 'feGroup'=>'personal', 'tl_class'=>'w50 wizard'),
-            'eval'                    => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50'),
-            'sql'                     => "date NOT NULL "
+            'search'                  => true,
+            'sorting'                 => true,
+            'flag'                    => 1,
+            'inputType'               => 'text',
+            'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
+            'sql'                     => "varchar(255) NOT NULL default ''"
         ),
       
      'geburtsjahr' => array
@@ -245,35 +249,44 @@ $GLOBALS['TL_DCA']['tl_person'] = array
             'sorting'                 => true,
             'flag'                    => 1,
             'inputType'               => 'text',
-            'eval'                    => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50', 'rgxp'=>'digit',),
-            'sql'                     => "int(10) unsigned"
+            'save_callback'           => array(array('tl_person', 'get_geburtsjahr' )), 
+            'eval'                    => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50'),
+            'sql'                     => "varchar(255) NOT NULL default ''"
         ),
-            
-     
+      /*   
+       'geversuch' => array (
+           'label'                   => &$GLOBALS['TL_LANG']['tl_person']['geversuch'],
+           'exclude'                 => true,
+           'inputType'               => 'text',
+           //'save_callback'           => array(array('tl_person', 'get_todesjahr' )),
+           'eval'                    => array('multiple'=>false, 'size'=>1, 'tl_class'=>'w50'),
+           'sql'                     => "varchar(255) NOT NULL default ''"
+       ) ,
+        
+     */
         'tod' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_person']['tod'],
-            'default'                 => date('y-m-d',mktime(0, 0, 0, 7, 1, 2000)),
-            'exclude'                 => true,
-            'filter'                  => true,
-            'sorting'                 => true,
-            'flag'                    => 8,
-            'inputType'               => 'text',
-            //'eval'                    => array('rgxp'=>'date', 'doNotCopy'=>true, 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
-            'eval'                    => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50'),
-            'sql'                     => "date"
-        ),
-          
-        'todesjahr' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_person']['todesjahr'],
             'exclude'                 => true,
             'search'                  => true,
             'sorting'                 => true,
             'flag'                    => 1,
             'inputType'               => 'text',
-            'eval'                    => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50', 'rgxp'=>'digit',),
-            'sql'                     => "int(10) unsigned"
+            'eval'                    => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50'),
+            'sql'                     => "varchar(255) NOT NULL default ''"
+        ),
+          
+        'todesjahr' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_person']['todessjahr'],
+            'exclude'                 => true,
+            'search'                  => true,
+            'sorting'                 => true,
+            'flag'                    => 1,
+            'inputType'               => 'text',
+            'save_callback'           => array(array('tl_person', 'get_todesjahr' )),
+            'eval'                    => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50'),
+            'sql'                     => "varchar(255) NOT NULL default ''"
         ), 
    
          'mutter' => array
@@ -298,9 +311,9 @@ $GLOBALS['TL_DCA']['tl_person'] = array
             'sql'                     => "varchar(64) NOT NULL default ''"
         ),
         
-        'partner' => array
+        'elter1'                     => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_person']['partner'],
+            'label'                   => &$GLOBALS['TL_LANG']['tl_person']['elter1'],
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'select',
@@ -309,6 +322,48 @@ $GLOBALS['TL_DCA']['tl_person'] = array
             'sql'                     => "varchar(64) NOT NULL default ''"
         ),
         
+        'elter2' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_person']['elter2'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'select',
+            'foreignKey'              => 'tl_person.CONCAT(lastname,  "," , firstname)',
+            'eval'                    => array('includeBlankOption'=>true, 'chosen'=>true, 'tl_class'=>'w50'),
+            'sql'                     => "varchar(64) NOT NULL default ''"
+        ),
+        
+        
+        
+        
+       
+        'partner' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_person']['partner'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'select',
+            'foreignKey'              => 'tl_person.CONCAT(lastname,  "," , firstname)',
+            //'save_callback'           => array(array('tl_person', 'clear_partner' )),
+            'eval'                    => array('includeBlankOption'=>true, 'chosen'=>true, 'tl_class'=>'w50'),
+            'sql'                     => "varchar(64) NOT NULL default ''"
+        ),
+        
+        'pos_partner' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_person']['pos_partner'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'radio',
+            'options'                 => array('r'=>'rechts von mir','l'=> 'links von mir' ),   
+            //'save_callback'           => array(array('tl_person', 'clear_partner' )),
+            'eval'                    => array('chosen'=>true, 'tl_class'=>'w50'),
+            'sql'                     => "char(1) NOT NULL default ''"
+        
+        ),
+        
+        
+        
         'mutter2' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_person']['mutter2'],
@@ -316,6 +371,7 @@ $GLOBALS['TL_DCA']['tl_person'] = array
             'filter'                  => true,
             'inputType'               => 'select',
             'foreignKey'              => 'tl_person.CONCAT(lastname,  "," , firstname)',
+            
             'eval'                    => array('includeBlankOption'=>true, 'chosen'=>true, 'tl_class'=>'w50'),
             'sql'                     => "varchar(64) NOT NULL default ''"
         ),
@@ -336,16 +392,54 @@ $GLOBALS['TL_DCA']['tl_person'] = array
         (
             'exclude'                 => true,
             'inputType'               => 'fileTree',
-            'eval'                    => array('filesOnly'=>true, 'fieldType'=>'radio', 'mandatory'=>true, 'tl_class'=>'clr'),
-            /*
-            'load_callback' => array
-            (
-                array('tl_content', 'setSingleSrcFlags')
-            ),
-            */
+            'eval'                    => array('filesOnly'=>true, 'fieldType'=>'radio', 'mandatory'=>true, 'tl_class'=>'w50'),
             'sql'                     => "binary(16) NULL"
         ),
         
+        'kernfamilie' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'checkboxWizard',
+            'options'                 => array('Eltern', 'Partner', 'Kinder', 'KinderEltern', 'Großeltern', 'Geschwister'),
+            'eval'                    => array('multiple'=>true,  'fieldType'=>'checkbox', 'chosen'=>true, 'isSortable'=>true , 'submitOnChange'=>true, 'tl_class'=>'w50'),
+            'sql'                     => "text NULL"
+        ),
+        
+        'kinder' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'checkboxWizard',
+            'options_callback'        => array('tl_person', 'find_kinder'),
+            'eval'                    => array('multiple'=>true,  'fieldType'=>'checkbox', 'chosen'=>true, 'isSortable'=>true, 'isAssociative'=>true, 'tl_class'=>'w50'),
+            'sql'                     => "text NULL"
+        ),
+        
+        'orderkinder' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'checkbox',
+            //'options_callback'        => array('tl_person', 'check_kernfamilie'),
+            'eval'                    => array('submitOnChange'=>true ),
+            'sql'                     => "char(1) NOT NULL default ''"
+        ),
+       
+        
+        'kindereltern2' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'checkboxWizard',
+            'options_callback'        => array('tl_person', 'find_kinderelter2'),
+            'eval'                    => array('multiple'=>true,  'fieldType'=>'checkbox', 'chosen'=>true, 'isSortable'=>true, 'isAssociative'=>true),
+            'sql'                     => "text NULL"
+        ),
+        
+        'orderkinderelter2' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => array('submitOnChange'=>true),
+            'sql'                     => "char(1) NOT NULL default ''"
+        ),
         
         
         
@@ -355,11 +449,19 @@ $GLOBALS['TL_DCA']['tl_person'] = array
     
     'palettes' => array(
         
-        'default'                     => '{title_legend},lastname, firstname; geburtsname, singleSRC ; {daten_legend},geburt, geburtsjahr; tod, todesjahr;{beziehung_legend},mutter, vater;partner ;{besbeziehung_legend:hide},mutter2, vater2 ; {publish_legend},published,start,stop',
-    )
+        '__selector__'                => array('orderkinder'),
+        'default'                     => '{title_legend},lastname, firstname; singleSRC , geburtsname ; 
+                                          {daten_legend},geburt, tod;
+                                          {beziehung_legend},elter1, elter2 ;partner, pos_partner;{besbeziehung_legend:hide},mutter2, vater2; kernfamilie, orderkinder;  ; 
+                                          {publish_legend},published,start,stop;
+                                          {entwicklung_legend}, geburtsjahr, todesjahr',
+    ),
         
-  
-   
+    'subpalettes' => array
+    (
+        'orderkinder'                  => 'kinder',
+       
+       )  
     
 );    
     
@@ -398,6 +500,104 @@ class tl_person extends Backend
         
         $this->Database->prepare("UPDATE tl_person SET dateAdded=? WHERE id=?")
         ->execute($time, $dc->id);
+    }
+    
+    public function check_kernfamilie(){
+        
+        return 1;
+    }
+    
+    
+    public function clear_partner($dc){
+          
+        $id = $_GET['id'];
+         
+        $partner = PersonModel::findById($id);
+        $pp = $partner->partner;
+        
+        $pos_pp ='';
+        
+        $pos_partner = $partner->pos_partner;
+        if ( $pos_partner == 'r' )
+            $pos_pp='l';
+        if ( $pos_partner == 'l' )
+            $pos_pp='r';
+        
+         $this->Database->prepare("UPDATE tl_person SET partner=?, pos_partner=? WHERE id=?")
+        ->execute($id, $pos_pp, $pp);
+         
+       
+        
+         return $pp;
+        
+    }
+    
+    
+    public function find_kinder() {
+        $id = $_GET['id'];
+        $t= 'tl_person';
+        $arrColumns[] = "$t.elter1 = $id OR $t.elter2=$id ";
+        $arrValues = array($intPid, $strColumn);
+        
+        $kk= PersonModel::findBy($arrColumns, $arrValues );
+        
+        
+        //$kk =  PersonModel::findChildrenByID($id);
+         $kinder = array();
+        foreach($kk as $k=>$val){
+            //$string = "'" . $val->id   . "' => '" .  $val->firstname . $val->lastname   . "'";  
+            //array_push($kinder, "$val->id  $val->firstname $val->lastname" ); 
+            //array_push($kinder, "$string" );
+            $kinder[$val->id] =  $val->firstname . " " .  $val->lastname;
+        }
+        
+        return $kinder;
+    }
+    
+    public function find_kinderelter2() {
+        $id = $_GET['id'];
+        
+        $kk = PersonModel::findElter2byID($id);
+        $kelter2 =array();
+        foreach($kk as $k=>$val){
+            $person = PersonModel::findByID($val);
+            $keltern2[$val] = $person-> firstname . " " . $person-> lastname ;
+        
+        }
+        
+        return $keltern2;
+    }
+    
+    
+    
+    public function get_geburtsjahr($dc){
+        
+        $id = $_GET['id'];
+        
+        $objPerson = PersonModel::findById($id);
+        
+        $eingabe = $objPerson->geburt;
+        
+        $ausgabe = date("Y",strtotime($eingabe));
+        
+        return $ausgabe;
+    }
+    
+    
+    public function get_todesjahr($dc){
+        
+        $id = $_GET['id'];
+        
+        $objPerson = PersonModel::findById($id);
+        
+        $eingabe = $objPerson->tod;
+        if ($eingabe != '' )
+          $ausgabe = date("Y",strtotime($eingabe));
+        else 
+          $ausgabe ='';
+          
+        return $ausgabe;
+    
     }
     
     public function toggleIcon($row, $href, $label, $title, $icon, $attributes)

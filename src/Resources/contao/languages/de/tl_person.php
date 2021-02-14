@@ -15,22 +15,30 @@ $GLOBALS['TL_LANG']['tl_person']['geburtsname'][0] = 'Geburtsname';
 $GLOBALS['TL_LANG']['tl_person']['geburtsname'][1] = 'falls vorhanden';
 
 $GLOBALS['TL_LANG']['tl_person']['geburt'][0] = 'Geburtsdatum';
-$GLOBALS['TL_LANG']['tl_person']['geburt'][1] = 'Format YYYY-MM-DD';
+$GLOBALS['TL_LANG']['tl_person']['geburt'][1] = 'Format beliebig aber mindestens einen 4stellige Jahreszahl';
 
 $GLOBALS['TL_LANG']['tl_person']['geburtsjahr'][0] = 'Geburtsjahr';
-$GLOBALS['TL_LANG']['tl_person']['geburtsjahr'][1] = 'Wenn Geburtsdatum unbekant ist: Format YYYY';
+$GLOBALS['TL_LANG']['tl_person']['geburtsjahr'][1] = 'wird automatisch gefüllt';
 
 $GLOBALS['TL_LANG']['tl_person']['tod'][0] = 'Sterbedatum';
-$GLOBALS['TL_LANG']['tl_person']['tod'][1] = 'Format YYYY-MM-DD';
+$GLOBALS['TL_LANG']['tl_person']['tod'][1] = 'Format egal, kann frei bleiben natürlich';
 
-$GLOBALS['TL_LANG']['tl_person']['todjahr'][0] = 'Todesjahr';
-$GLOBALS['TL_LANG']['tl_person']['todjahr'][1] = 'Wenn Sterbedatum unbekant ist: Format YYYY';
+$GLOBALS['TL_LANG']['tl_person']['todesjahr'][0] = 'Todesjahr';
+$GLOBALS['TL_LANG']['tl_person']['todesjahr'][1] = 'wird automatisch gefüllt';
 
-$GLOBALS['TL_LANG']['tl_person']['mutter'][0] = 'Mutter';
-$GLOBALS['TL_LANG']['tl_person']['mutter'][1] = 'Mutter aus Liste auswählen';
+$GLOBALS['TL_LANG']['tl_person']['mutter'][0] = 'Erstes Elternteil';
+$GLOBALS['TL_LANG']['tl_person']['mutter'][1] = '..aus Liste auswählen';
 
-$GLOBALS['TL_LANG']['tl_person']['vater'][0] = 'Vater';
-$GLOBALS['TL_LANG']['tl_person']['vater'][1] = 'Vater aus Liste auswählen';
+$GLOBALS['TL_LANG']['tl_person']['vater'][0] = 'Zweites Elternteil';
+$GLOBALS['TL_LANG']['tl_person']['vater'][1] = '..aus Liste auswählen';
+
+$GLOBALS['TL_LANG']['tl_person']['elter1'][0] = 'Erstes Elternteil';
+$GLOBALS['TL_LANG']['tl_person']['elter1'][1] = '..aus Liste auswählen';
+
+$GLOBALS['TL_LANG']['tl_person']['elter2'][0] = 'Zweites Elternteil';
+$GLOBALS['TL_LANG']['tl_person']['elter2'][1] = '..aus Liste auswählen';
+
+
 
 $GLOBALS['TL_LANG']['tl_person']['partner'][0] = 'Partner';
 $GLOBALS['TL_LANG']['tl_person']['partner'][1] = 'Partner aus Liste auswählen';
